@@ -12,13 +12,21 @@ class EditorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get aspect ratio from arguments, default to 1:1
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final aspectRatio = args?['aspectRatio'] as double? ?? 1.0;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Edit Collage')),
       body: BlocBuilder<CollageCubit, Collage?>(
         builder: (context, collage) {
           if (collage == null) return const Center(child: Text('No collage'));
-          const double canvasWidth = 1000;
-          const double canvasHeight = 500;
+
+          // Calculate canvas dimensions based on aspect ratio
+          const double baseWidth = 1000;
+          final canvasWidth = baseWidth;
+          final canvasHeight = baseWidth / aspectRatio;
           return Center(
             child: AspectRatio(
               aspectRatio: canvasWidth / canvasHeight,

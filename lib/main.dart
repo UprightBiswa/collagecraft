@@ -1,25 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'bloc/photo_cubit.dart';
-import 'bloc/layout_cubit.dart';
 import 'bloc/collage_cubit.dart';
 import 'repositories/photo_repository.dart';
-import 'screens/home_screen.dart';
+import 'database/objectbox_manager.dart';
+import 'screens/splash_screen.dart';
+import 'screens/main_navigation_screen.dart';
+import 'screens/editor_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize ObjectBox
+  await ObjectBoxManager.instance;
+
   runApp(
     MultiRepositoryProvider(
       providers: [RepositoryProvider(create: (_) => PhotoRepository())],
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => PhotoCubit(context.read<PhotoRepository>()),
-          ),
-          BlocProvider(create: (_) => LayoutCubit()),
-          BlocProvider(create: (_) => CollageCubit()),
-        ],
-        child: const MyApp(),
-      ),
+      child: BlocProvider(create: (_) => CollageCubit(), child: const MyApp()),
     ),
   );
 }
@@ -35,7 +32,12 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const SplashScreen(),
+        '/home': (context) => const MainNavigationScreen(),
+        '/editor': (context) => const EditorScreen(),
+      },
     );
   }
 }
